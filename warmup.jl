@@ -1,7 +1,7 @@
 using Plots
 using Distributions
 
-# https://discourse.julialang.org/t/generation-of-documentation-fails-qt-qpa-xcb-could-not-connect-to-display/60988/2?u=rozsasarpi
+# https://discourse.julialang.org/t/generation-of-documentation-fails-qt-qpa-xcb-could-not-connect-to-display/60988/2
 ENV["GKSwstype"] = "100"
 
 mu = 3.14;

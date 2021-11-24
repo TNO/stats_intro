@@ -1,8 +1,8 @@
 name: Build stats_intro for mybinder.org
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
 
 jobs:
   binder:
