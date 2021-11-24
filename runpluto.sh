@@ -17,4 +17,5 @@ Pluto.run(
     require_secret_for_access=false
 )"
 echo ${command}
-julia --project="/home/jovyan" --optimize=0 -e "${command}"
+# the `sysimage` path must match the one used in `create_sysimage.jl`
+julia --project="/home/jovyan" --sysimage="/usr/local/sys.so" --optimize=0 -e "${command}"
