@@ -98,14 +98,14 @@ begin
 		p_sample = scatter(sample_x, sample_y, markersize=sample_radius,
 			label=nothing, axis=([], false), markercolor="red", title="Sample",
 		)
-		plot(p_pop, p_sample, layout = (1, 2), legend = false)
+		plot(p_pop, p_sample, layout = (1, 2), legend = false, link=:all)
 	end
 end
 
 # ╔═╡ 414cfce1-1bbf-4ae9-9f06-c4a4d55b7ad3
 begin
-	vline([pop_mean], lw=3, label=nothing, yaxis=([], false), xlabel="mean")
-	vline!([mean(sample_radius)], color="red", label=nothing)
+	vline([mean(radius)], lw=3, label="population", yaxis=([], false), xlabel="mean")
+	vline!([mean(sample_radius)], color="red", label="sample")
 	plot!(xlims=(pop_mean - 3*pop_std, pop_mean + 3*pop_std))
 end
 
@@ -394,9 +394,9 @@ version = "0.21.0+0"
 
 [[Glib_jll]]
 deps = ["Artifacts", "Gettext_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Libiconv_jll", "Libmount_jll", "PCRE_jll", "Pkg", "Zlib_jll"]
-git-tree-sha1 = "7bf67e9a481712b3dbe9cb3dac852dc4b1162e02"
+git-tree-sha1 = "74ef6288d071f58033d54fd6708d4bc23a8b8972"
 uuid = "7746bdde-850d-59dc-9ae8-88ece973131d"
-version = "2.68.3+0"
+version = "2.68.3+1"
 
 [[Graphite2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -417,9 +417,9 @@ version = "0.9.17"
 
 [[HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg"]
-git-tree-sha1 = "8a954fed8ac097d5be04921d595f741115c1b2ad"
+git-tree-sha1 = "129acf094d168394e80ee1dc4bc06ec835e510a3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
-version = "2.8.1+0"
+version = "2.8.1+1"
 
 [[Hyperscript]]
 deps = ["Test"]
@@ -1119,11 +1119,11 @@ version = "0.9.1+5"
 # ╟─7b93882c-9ad8-11ea-0288-0941e163f9d5
 # ╟─7110fe00-83a8-4a9d-975e-d59d0f351630
 # ╟─0a171174-2db6-4077-a4af-1da84c9f5470
-# ╟─13f0fefb-a926-4689-9518-a5d77e0582d7
+# ╠═13f0fefb-a926-4689-9518-a5d77e0582d7
 # ╟─26c379e4-8480-4e1e-ae8e-933eadfd69f3
 # ╟─016bf804-ca81-4300-8d5b-1e063834d4d0
 # ╟─8db552a0-1a45-401c-a579-c3ffc47b27c9
-# ╟─414cfce1-1bbf-4ae9-9f06-c4a4d55b7ad3
+# ╠═414cfce1-1bbf-4ae9-9f06-c4a4d55b7ad3
 # ╟─a090b42b-ee45-4a63-a780-b63df6ac3d11
 # ╟─7a0961e0-d332-492e-bbd2-e2127e65f1a4
 # ╟─a9f04175-2d40-4cf6-be59-b24058a4b1ce
