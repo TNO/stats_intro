@@ -29,10 +29,7 @@ end;
 md"""
 # Likelihood function
 
-* what was done during the previous week
-* questions
-* tasks
-* likelihood function
+A broad brush overview.
 """
 
 # ╔═╡ 7110fe00-83a8-4a9d-975e-d59d0f351630
@@ -61,17 +58,20 @@ end;
 
 # ╔═╡ 26c379e4-8480-4e1e-ae8e-933eadfd69f3
 md"""
-Population radius distribution: $\mathcal{N}$($(pop_mean), $(pop_std))
+Population radius distribution: ``\mathcal{N}(``$(pop_mean), $(pop_std)``^2)``
 """
 
 # ╔═╡ 016bf804-ca81-4300-8d5b-1e063834d4d0
-@bind do_sample Button("Sample")
+md"""Hit this button to resample: $(@bind do_sample Button("Sample"))"""
+
+# ╔═╡ 6465a01e-d0e9-4670-b9af-05f7a7a6a200
+ md"Change the sample size by dragging the slider: $(@bind n_sample Slider(1:1:(n_pop_row^2), default=20, show_value=true))"
 
 # ╔═╡ 8db552a0-1a45-401c-a579-c3ffc47b27c9
 begin
 	do_sample
 	# Control and settings
-	n_sample = 20
+	# n_sample = 20
 
 	# ........................
 	# Sample
@@ -98,14 +98,14 @@ begin
 		p_sample = scatter(sample_x, sample_y, markersize=sample_radius,
 			label=nothing, axis=([], false), markercolor="red", title="Sample",
 		)
-		plot(p_pop, p_sample, layout = (1, 2), legend = false)
+		plot(p_pop, p_sample, layout = (1, 2), legend = false, link=:all)
 	end
 end
 
 # ╔═╡ 414cfce1-1bbf-4ae9-9f06-c4a4d55b7ad3
 begin
-	vline([pop_mean], lw=3, label=nothing, yaxis=([], false), xlabel="mean")
-	vline!([mean(sample_radius)], color="red", label=nothing)
+	vline([mean(radius)], lw=3, label="population", yaxis=([], false), xlabel="mean")
+	vline!([mean(sample_radius)], color="red", label="sample")
 	plot!(xlims=(pop_mean - 3*pop_std, pop_mean + 3*pop_std))
 end
 
@@ -121,10 +121,10 @@ _Informal definition_: The mathematical model that is assumed to generated the d
 md"""
 For example, considering the above example:
 
-* dataset: $\mathbf{x}$
-* to be estimated model parameter: $\theta$
+* dataset: ``\mathbf{x}``
+* to be estimated model parameter: ``\theta``
 
-$X_i\sim\mathcal{N}(\theta, \sigma)$, 
+$X_i\sim\mathcal{N}(\theta, \sigma^2)$, 
 
 where $\sigma$=$(pop_std).
 
@@ -132,7 +132,7 @@ Usually it is more complex, for example a common linear model:
 
 $X_i\sim\mathcal{N}(a \cdot z_i + b, \sigma)$, 
 
-where $\theta=[a, b]$, and $a$ and $b$ are the slope and the intersection of the linear model respectively.
+where ``\theta=[a, b]``, and ``a`` and ``b`` are the slope and the intersection of the linear model respectively.
 
 Data generating model: Steps of generating random observations from a model (the model definition is part of this!).
 
@@ -145,15 +145,196 @@ md"""
 
 _Informal definition_: Tells us what is the likelihood of seeing a dataset under a particular model.
 
-* dataset: $\mathbf{x}$
-* model: $\mathcal{M}$, parametrized with $\boldsymbol{\theta}$
-* particular model: a particular set of $\boldsymbol{\theta}$ values
+* dataset: ``\mathbf{x}`` (``n`` number of observations)
+* model: ``\mathcal{M}``, parametrized with ``\boldsymbol{\theta}``
+* particular model: a particular set of ``\boldsymbol{\theta}`` values
 
 
 $L(\theta, \mathbf{x})$
 
-$L(\theta, \mathbf{x}) = \prod p(x_i, \theta)$
+$L(\theta, \mathbf{x}) = \prod_{i}^{n} p(x_i, \theta)$
+
+where ``p(.)`` is a probability density or mass function.
 """
+
+# ╔═╡ 461c107c-a40e-4fb9-a4ce-9d9c387be074
+md"""
+## Example: [Task 2](https://docs.google.com/document/d/1vrzjcl8k1RoBaWocgTvVfLLG6LDAHiMwh_MC9PcnfsQ/edit#heading=h.fwqlqf4cfis1)
+"""
+
+# ╔═╡ afdd513d-6995-4801-9bac-59d4a2287322
+begin
+	x_sample = [30.1 28.7 21.2 28.6 25.8 25.1 24.2 27.3 20.0 34.8]
+	sigma_pop = 5
+	mean_prior_mean = 40
+	mean_prior_std = 100
+end;
+
+# ╔═╡ 3f467d2d-5053-4e1e-970b-8c61152f5757
+md"""
+We have a vector independent observations (``n=``$(length(x_sample))):
+
+``\mathbf{x} =`` [$(join(x_sample, ", "))]
+
+drawn from ``\mathcal{N}(\mu, \sigma^2=``$(mean_prior_std)``^2)``.
+
+Based on this, we can write down the likelihood function:
+
+$L(\mu, \mathbf{x}) = \prod_{i}^{n} \varphi \left( \frac {x_i - \mu}{\sigma} \right)$
+
+where ``\varphi(.)`` is the standard normal probability density function:
+
+$\varphi(x)={\frac {1}{{\sqrt {2\pi }}}}e^{-x^{2}}$.
+
+Visualizing the likelihood function:
+"""
+
+# ╔═╡ 2dfee269-4539-4f96-afca-4e975c2fd5f0
+begin
+	log_likelihood(t) = sum(logpdf(Normal(t), x_sample))
+
+	tt = range(30-2.5*sigma_pop, stop=30+2.5*sigma_pop, length=40)
+	log_ll = log_likelihood.(tt)
+
+	min_log_l = minimum(log_ll)
+end;
+
+# ╔═╡ 9a7b43ec-5d43-43c5-aa35-b776de4a48c7
+md"Change the value of ``\mu`` by dragging the slider: $(@bind mu Slider((30-2.5*sigma_pop):0.2:(30+2.5*sigma_pop), default=30))"
+
+# ╔═╡ 39e69cb1-207a-42b6-920a-1912d50edb4e
+md"""
+``\mu_\mathrm{selected}=``$mu MPa
+
+``\mathrm{log} \left( L(\mu_\mathrm{selected}) \right) =``$(round(log_likelihood(mu), digits=1))
+"""
+
+# ╔═╡ 5bd1d628-beaa-47c8-98a6-f8eb36444e93
+begin
+	log_l_mu = log_likelihood(mu)
+	begin
+		plot(tt, log_ll, lw=3, xlabel="\\mu", ylabel="log-likelihood", label=nothing)
+		plot!([mu, mu], [min_log_l, log_l_mu], ls=:dash, color="red", label="selected value")
+		scatter!([mu], [log_l_mu], label=nothing, color="red", markersize=6)
+	end
+end
+
+# ╔═╡ 684b5e7b-6de1-42af-9497-28a957aa73ad
+md"""The maximum likelihood estimate is the value that maximizes the likelihood function (the same that maximizes the log-likelihood function)."""
+
+# ╔═╡ 422e4766-7a75-4403-a189-fbf89d41a8f0
+md"""
+## Example: Simple linear regression
+
+* data generating process
+* constructing the likelihood function
+* maximum likelihood estimate
+
+_Task:_ estimate the slope parameter of a linear model from a sample.
+"""
+
+# ╔═╡ 5578a9d5-7d7b-4582-91e8-7dab5ba2a572
+begin
+	# Control and settings
+	n_sample_lin = 15
+	x_lims = (-2.0, 4.0)
+	a_ground_truth = 1.0
+	b_ground_truth = 3.0
+	
+	# Model
+	linear_model(x, a) = a .* x + b_ground_truth
+	
+	
+	eps_sigma = 0.5
+	ground_truth_model(x) = linear_model(x, a_ground_truth)
+
+	# Generate synthetic data
+	x_data = rand(Uniform(x_lims[1], x_lims[2]), n_sample_lin)
+	y_data = ground_truth_model.(x_data) .+ rand(Normal(0.0, eps_sigma), n_sample_lin)
+
+	y_lims = ground_truth_model.(x_lims)
+	y_range = y_lims[2] - y_lims[1]
+	y_lims_lb = minimum([y_lims[1], minimum(y_data)]) - 0.2*y_range
+	y_lims_ub = maximum([y_lims[2], maximum(y_data)]) + 0.2*y_range
+	y_lims = (y_lims_lb, y_lims_ub)
+	# with_terminal() do
+	# 	println(y_lims)
+	# end
+end;
+
+# ╔═╡ 534e1a70-62f4-41fa-bd03-86bb9e4bf495
+md"""
+Parametrization of the linear model:
+
+$y = a \cdot x + b$
+
+where ``b`` is known, ``b=``$(b_ground_truth), and ``a`` is to be estimated.
+
+We have an ``n=``$n_sample_lin sample of ``x`` and ``y`` pairs:
+
+``\mathbf{x} =`` [$(join(round.(x_data, digits=2), ", "))]
+
+``\mathbf{y} =`` [$(join(round.(y_data, digits=2), ", "))]
+
+This is how our data looks like:
+"""
+
+# ╔═╡ b9b80541-571c-4401-b9c9-1ae7fe95beba
+begin
+	scatter(x_data, y_data, xlabel="x", ylabel="y", label="observation", xlims=x_lims, ylims=y_lims, legend=:topleft)
+end
+
+# ╔═╡ 9b63c009-7984-49a6-be7d-5ba52c78a855
+md"""
+They do not fall on a straight line, so if we want to use a linear model it is better to formulate it with a model error. Let's use the following additive model error formulation:
+
+$y = a \cdot x + b + \epsilon$
+
+where ``\epsilon`` is assumed to be a realization from ``\mathcal{N}(0, \sigma_{\epsilon}=``$(eps_sigma)``^2)``. For simplicity, we assume that this distribution is fully known but in general its standard deviation is not known but also estimated. Moreover, we assume that the ``\epsilon`` values are independent between realizations.
+
+The above equation also shows us the data generating process and we can formulate the likelihood function by recognizing that
+
+$y_i \sim \mathcal{N}(a \cdot x_i + b, \sigma_{\epsilon}^2)$
+
+To make the independent, identically distributed (IID) assumption explicity:
+
+$y_i \overset{\text{IID}}{\sim} \mathcal{N}(a \cdot x_i + b, \sigma_{\epsilon}^2)$
+
+"""
+
+# ╔═╡ bd4dbdc8-84d0-48f8-b4fb-69805b14aaff
+md"Change the value of ``a`` by dragging the slider: $(@bind a_selected Slider(-1:0.1:3, default=-0.5, show_value=true))"
+
+
+# ╔═╡ 32b13ec7-b976-494a-bfff-2efedfe16ea4
+begin
+	# Plot
+	scatter(x_data, y_data, xlabel="x", ylabel="y", label="observation", legend=:topleft, xlims=x_lims, ylims=y_lims)
+	plot!([x_lims[1], x_lims[2]], linear_model.([x_lims[1], x_lims[2]], a_selected), label="selected linear model", lw=3)
+end
+
+# ╔═╡ cf56ff3d-d9fd-4222-997f-750896ac0440
+begin
+	# Log-likelihood
+	function log_like_fun(t)
+		ll = 0
+		for ii = 1:n_sample_lin
+			ll += logpdf(Normal(linear_model.(x_data[ii], t), eps_sigma), y_data[ii])
+		end
+		return ll
+	end
+
+	tl = range(-1.0, stop=3.0, length=40)
+	log_like = log_like_fun.(tl)
+
+	min_log_like = minimum(log_like)
+	log_like_a = log_like_fun(a_selected)
+	
+	# Plot
+	plot(tl, log_like, lw=3, label=nothing, xlabel="a", ylabel="log-likelihood")
+	plot!([a_selected, a_selected], [min_log_like, log_like_a], ls=:dash, color="red", label="selected model")
+	scatter!([a_selected], [log_like_a], label=nothing, color="red", markersize=6)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -394,9 +575,9 @@ version = "0.21.0+0"
 
 [[Glib_jll]]
 deps = ["Artifacts", "Gettext_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Libiconv_jll", "Libmount_jll", "PCRE_jll", "Pkg", "Zlib_jll"]
-git-tree-sha1 = "7bf67e9a481712b3dbe9cb3dac852dc4b1162e02"
+git-tree-sha1 = "74ef6288d071f58033d54fd6708d4bc23a8b8972"
 uuid = "7746bdde-850d-59dc-9ae8-88ece973131d"
-version = "2.68.3+0"
+version = "2.68.3+1"
 
 [[Graphite2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -417,9 +598,9 @@ version = "0.9.17"
 
 [[HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg"]
-git-tree-sha1 = "8a954fed8ac097d5be04921d595f741115c1b2ad"
+git-tree-sha1 = "129acf094d168394e80ee1dc4bc06ec835e510a3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
-version = "2.8.1+0"
+version = "2.8.1+1"
 
 [[Hyperscript]]
 deps = ["Test"]
@@ -1122,10 +1303,27 @@ version = "0.9.1+5"
 # ╟─13f0fefb-a926-4689-9518-a5d77e0582d7
 # ╟─26c379e4-8480-4e1e-ae8e-933eadfd69f3
 # ╟─016bf804-ca81-4300-8d5b-1e063834d4d0
+# ╟─6465a01e-d0e9-4670-b9af-05f7a7a6a200
 # ╟─8db552a0-1a45-401c-a579-c3ffc47b27c9
 # ╟─414cfce1-1bbf-4ae9-9f06-c4a4d55b7ad3
 # ╟─a090b42b-ee45-4a63-a780-b63df6ac3d11
 # ╟─7a0961e0-d332-492e-bbd2-e2127e65f1a4
 # ╟─a9f04175-2d40-4cf6-be59-b24058a4b1ce
+# ╟─461c107c-a40e-4fb9-a4ce-9d9c387be074
+# ╟─afdd513d-6995-4801-9bac-59d4a2287322
+# ╟─3f467d2d-5053-4e1e-970b-8c61152f5757
+# ╟─2dfee269-4539-4f96-afca-4e975c2fd5f0
+# ╟─9a7b43ec-5d43-43c5-aa35-b776de4a48c7
+# ╟─39e69cb1-207a-42b6-920a-1912d50edb4e
+# ╟─5bd1d628-beaa-47c8-98a6-f8eb36444e93
+# ╟─684b5e7b-6de1-42af-9497-28a957aa73ad
+# ╟─422e4766-7a75-4403-a189-fbf89d41a8f0
+# ╟─5578a9d5-7d7b-4582-91e8-7dab5ba2a572
+# ╟─534e1a70-62f4-41fa-bd03-86bb9e4bf495
+# ╟─b9b80541-571c-4401-b9c9-1ae7fe95beba
+# ╟─9b63c009-7984-49a6-be7d-5ba52c78a855
+# ╟─bd4dbdc8-84d0-48f8-b4fb-69805b14aaff
+# ╟─32b13ec7-b976-494a-bfff-2efedfe16ea4
+# ╟─cf56ff3d-d9fd-4222-997f-750896ac0440
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
