@@ -7,6 +7,7 @@ Most notebooks are not self-contained, they are to be accompanied by a narration
 
 You can view and interact with the notebooks from your browser without any installation (powered by [binder](https://mybinder.org/))
 
+* [Distributions](https://mybinder.org/v2/gh/TNO/stats_intro/main?urlpath=pluto/open?path=/home/jovyan/notebooks/distributions.jl)
 * [Likelihood](https://mybinder.org/v2/gh/TNO/stats_intro/main?urlpath=pluto/open?path=/home/jovyan/notebooks/likelihood.jl)
 
 
