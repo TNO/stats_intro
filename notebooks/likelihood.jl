@@ -176,7 +176,7 @@ We have a vector independent observations (``n=``$(length(x_sample))):
 
 ``\mathbf{x} =`` [$(join(x_sample, ", "))]
 
-drawn from ``\mathcal{N}(\mu, \sigma^2=``$(mean_prior_std)``^2)``.
+drawn from ``\mathcal{N}(\mu, \sigma^2=``$(sigma_pop)``^2)``.
 
 Based on this, we can write down the likelihood function:
 
@@ -186,12 +186,12 @@ where ``\varphi(.)`` is the standard normal probability density function:
 
 $\varphi(x)={\frac {1}{{\sqrt {2\pi }}}}e^{-x^{2}}$.
 
-Visualizing the likelihood function:
+Visualizing the log of the likelihood function:
 """
 
 # ╔═╡ 2dfee269-4539-4f96-afca-4e975c2fd5f0
 begin
-	log_likelihood(t) = sum(logpdf(Normal(t), x_sample))
+	log_likelihood(t) = sum(logpdf(Normal(t, sigma_pop), x_sample))
 
 	tt = range(30-2.5*sigma_pop, stop=30+2.5*sigma_pop, length=40)
 	log_ll = log_likelihood.(tt)
@@ -296,7 +296,7 @@ The above equation also shows us the data generating process and we can formulat
 
 $y_i \sim \mathcal{N}(a \cdot x_i + b, \sigma_{\epsilon}^2)$
 
-To make the independent, identically distributed (IID) assumption explicity:
+To make the independent, identically distributed (IID) assumption explicit:
 
 $y_i \overset{\text{IID}}{\sim} \mathcal{N}(a \cdot x_i + b, \sigma_{\epsilon}^2)$
 
